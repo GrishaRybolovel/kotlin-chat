@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      # You can pass environment variables for your database connection.
+      # For example, if your backend reads these properties:
+      - DATABASE_URL=jdbc:postgresql://db:5432/chatapp
+      - DATABASE_USER=chatuser
+      - DATABASE_PASSWORD=chatpassword
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"  # Maps container port 80 (nginx) to host port 3000
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: chatapp
+      POSTGRES_USER: chatuser
+      POSTGRES_PASSWORD: chatpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
